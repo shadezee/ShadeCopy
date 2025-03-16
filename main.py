@@ -62,11 +62,11 @@ class MainWindow(QMainWindow, Ui_mainWindow):
     folder = QFileDialog.getExistingDirectory(self, 'Select Destination Folder')
     if folder:
       self.copyTo = folder
-      folder_parts = folder.split('/')
+      folderParts = folder.split('/')
 
-      if len(folder_parts) > 3:
-        path_str = "/".join(folder_parts[-3:])
-        self.selectDirectory.setText(f'Destination Folder: {path_str}')
+      if len(folderParts) > 3:
+        pathStr = "/".join(folderParts[-3:])
+        self.selectDirectory.setText(f'Destination Folder: {pathStr}')
       else:
         self.selectDirectory.setText(f'Destination Folder: {folder}')
 
