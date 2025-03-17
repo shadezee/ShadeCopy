@@ -1,111 +1,99 @@
+from PyQt5 import uic
 from PyQt5.QtWidgets import (
   QApplication,
   QMainWindow,
-  QVBoxLayout,
-  QWidget,
-  QLabel,
-  QPushButton,
+  QListWidgetItem,
   QFileDialog
 )
-from PyQt5.QtGui import QIcon
-from PyQt5.QtCore import QThread, pyqtSignal
-from os import path
-from watchfiles import Change, watch
-from shutil import copy2
-from time import sleep
+from os import path, listdir
+from shade_copy_worker import ShadeCopyWorker
+from assets.shade_copy_ui import Ui_mainWindow
 
-class ShadeCopyWorker(QThread):
-  statusSignal = pyqtSignal(str)
-  errorSignal = pyqtSignal(str)
+class MainWindow(QMainWindow, Ui_mainWindow):
+  # buttons --> retainButton, recallButton, watchButton
+  # labels acting as buttons --> selectFileDir, selectDirectory
+  # display label --> display
+  # List view --> fileListView
 
-  def __init__(self, fileToMonitor, copyTo):
-    super().__init__()
-    self.fileToMonitor = fileToMonitor
-    self.copyTo = copyTo
-    print(f'Copying {fileToMonitor} to {copyTo}')
-
-  def run(self):
-    i = 0
-    try:
-      for changes in watch(self.fileToMonitor):
-        for changeType, _ in changes:
-          if changeType in (Change.added, Change.modified):
-            sleep(2)
-            i += 1
-            copy2(self.fileToMonitor, self.copyTo)
-            self.statusSignal.emit(f'{i}. {self.fileToMonitor} copied.')
-    except Exception as e:
-      self.errorSignal.emit(f'An error occurred.\n{e}')
-
-class MainWindow(QMainWindow):
   def __init__(self):
     super().__init__()
-    self.setWindowTitle('Shade Copy')
-    iconPath = path.join(path.dirname(__file__), 'assets', 'icon.ico')
-    self.setWindowIcon(QIcon(iconPath))
-    self.setFixedSize(450, 250)
+    self.setupUi(self)
 
-    layout = QVBoxLayout()
+    self.selectFileDir.mousePressEvent = self.select_file_dir
+    self.selectDirectory.mousePressEvent = self.select_directory
+    self.watchButton.clicked.connect(self.begin)
 
-    self.fileLabel = QLabel('No file selected.')
-    self.dirLabel = QLabel('No directory selected.')
-    self.status = QLabel()
+    self.status = False
+    self.copyTo = None
+    self.pathToMonitor = None
 
-    self.fileButton = QPushButton('Select a file...')
-    self.fileButton.clicked.connect(self.select_file)
+  def select_file_dir(self, event):
+    folder = QFileDialog.getExistingDirectory(self, 'Select Destination Folder')
+    if folder:
+      self.pathToMonitor = folder
+      directoryFiles = listdir(folder)
+      filteredFiles = []
 
-    self.dirButton = QPushButton('Select a directory...')
-    self.dirButton.clicked.connect(self.select_directory)
+      for file in directoryFiles:  
+        if path.isfile(path.join(folder, file)):
+          filteredFiles.append(file)
 
-    self.startButton = QPushButton('Start')
-    self.startButton.clicked.connect(self.begin)
+      self.populate_file_selection(filteredFiles)
 
-    layout.addWidget(self.fileLabel)
-    layout.addWidget(self.fileButton)
-    layout.addWidget(self.dirLabel)
-    layout.addWidget(self.dirButton)
-    layout.addWidget(self.startButton)
-    layout.addWidget(self.status)
+  def populate_file_selection(self, filteredFiles):
+    self.fileListView.clear()
+    for f in filteredFiles:
+      QListWidgetItem(f, self.fileListView)
+    self.fileListView.setCurrentRow(0)
 
-    container = QWidget()
-    container.setLayout(layout)
-    self.setCentralWidget(container)
+  def reset_fields(self, error=False):
+    if error:
+      self.fileListView.clear()
+      self.fileToMonitor = None
+      self.copyTo = None
+      self.selectDirectory.setText('Select Directory')
 
-  def select_file(self):
-    file, _ = QFileDialog.getOpenFileName(self, 'Select File')
-    if file:
-      self.fileToMonitor = file
-      self.fileLabel.setText(f'Selected File: {path.basename(file)}')
+    self.status = False
+    self.shade_watcher.terminate()
+    self.update_status('\nTerminated watching...')
 
-  def select_directory(self):
+  def error_handler(self, message):
+    self.display.setText(message)
+    self.reset_fields(True)
+
+  def select_directory(self, event):
     folder = QFileDialog.getExistingDirectory(self, 'Select Destination Folder')
     if folder:
       self.copyTo = folder
-      self.dirLabel.setText(f'Destination Folder: {folder}')
+      folderParts = folder.split('/')
 
-  def reset_fields(self):
-    self.fileLabel.setText('No file selected.')
-    self.dirLabel.setText('No directory selected.')
-    self.fileToMonitor = None
-    self.copyTo = None
-
-  def error_handler(self, message):
-    self.status.setText(message)
-    self.reset_fields()
-    self.shade_watcher.terminate()
+      if len(folderParts) > 3:
+        pathStr = "/".join(folderParts[-3:])
+        self.selectDirectory.setText(f'Destination Folder: {pathStr}')
+      else:
+        self.selectDirectory.setText(f'Destination Folder: {folder}')
 
   def update_status(self, message):
-    self.status.setText(message)
+    self.display.setText(f'{self.display.text()}{message}')
 
   def begin(self):
-    if not self.fileToMonitor or not self.copyTo:
+    if self.status:
+      self.reset_fields()
       return
-    self.status.setText('Watching...')
-    copyTo = f'{self.copyTo}/{path.basename(self.fileToMonitor)}'
-    self.shade_watcher = ShadeCopyWorker(self.fileToMonitor, copyTo)
-    self.shade_watcher.statusSignal.connect(self.update_status)
-    self.shade_watcher.errorSignal.connect(self.error_handler)
-    self.shade_watcher.start()
+
+    fileItem = self.fileListView.currentItem()
+    if not fileItem:
+      return
+
+    fileName = fileItem.text()
+    if fileName and self.copyTo:
+      self.display.setText(f'Watching {fileName}...\n\n')
+      copyTo = f'{self.copyTo}/{fileName}'
+      self.shade_watcher = ShadeCopyWorker(self.pathToMonitor, fileName, copyTo)
+      self.shade_watcher.statusSignal.connect(self.update_status)
+      self.shade_watcher.errorSignal.connect(self.error_handler)
+      self.status = True
+      self.shade_watcher.start()
 
 if __name__ == '__main__':
   app = QApplication([])

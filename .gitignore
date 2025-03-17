@@ -1,3 +1,7 @@
 # image files
 *.psd
 *.png
+
+# directories
+.vscode
+__pycache__
