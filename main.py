@@ -32,14 +32,17 @@ class MainWindow(QMainWindow, Ui_mainWindow):
     if folder:
       self.pathToMonitor = folder
       directoryFiles = listdir(folder)
-      for file in directoryFiles:
-        if not path.isfile(file):
-          directoryFiles.remove(file)
-      self.populate_file_selection(directoryFiles)
+      filteredFiles = []
 
-  def populate_file_selection(self, directoryFiles):
+      for file in directoryFiles:  
+        if path.isfile(path.join(folder, file)):
+          filteredFiles.append(file)
+
+      self.populate_file_selection(filteredFiles)
+
+  def populate_file_selection(self, filteredFiles):
     self.fileListView.clear()
-    for f in directoryFiles:
+    for f in filteredFiles:
       QListWidgetItem(f, self.fileListView)
     self.fileListView.setCurrentRow(0)
 
@@ -84,7 +87,7 @@ class MainWindow(QMainWindow, Ui_mainWindow):
 
     fileName = fileItem.text()
     if fileName and self.copyTo:
-      self.display.setText(f'Watching {fileName}...')
+      self.display.setText(f'Watching {fileName}...\n\n')
       copyTo = f'{self.copyTo}/{fileName}'
       self.shade_watcher = ShadeCopyWorker(self.pathToMonitor, fileName, copyTo)
       self.shade_watcher.statusSignal.connect(self.update_status)

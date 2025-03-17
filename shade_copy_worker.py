@@ -10,20 +10,31 @@ class ShadeCopyWorker(QThread):
 
   def __init__(self, pathToMonitor, fileName, copyTo):
     super().__init__()
-    self.pathToMonitor = pathToMonitor
+    self.pathToMonitor = path.normpath(pathToMonitor)
     self.fileName = fileName
-    self.copyTo = copyTo
+    self.copyTo = path.normpath(copyTo)
 
   def run(self):
     i = 0
-    try:
-      for changes in watch(self.pathToMonitor):
-        for changeType, file in changes:
-          file = path.normpath(file)
-          if not changeType == Change.deleted and path.basename(file) == self.fileName:
-            sleep(2)
-            i += 1
-            copy2(file, self.copyTo)
-            self.statusSignal.emit(f'{i}. {self.fileName} copied.\n')
-    except Exception as e:
-      self.errorSignal.emit(f'\n\nAn error occurred.\n{e}\n')
+    while True:
+      try:
+        if path.exists(self.pathToMonitor):
+          for changes in watch(self.pathToMonitor):
+            for changeType, file in changes:
+              file = path.normpath(file)
+
+              if self.copyTo in file:
+                continue
+
+              if not changeType == Change.deleted and path.basename(file) == self.fileName:
+                sleep(2)
+                i += 1
+                copy2(path.join(self.pathToMonitor, self.fileName), self.copyTo)
+                self.statusSignal.emit(f'{i}. {self.fileName} copied.\n')
+      except FileNotFoundError:
+        i -= 1
+        self.statusSignal.emit(f'Cannot find {self.pathToMonitor}.\nStopping operations for 5 seconds until it is found again.\n\n')
+        sleep(5)
+        continue
+      except Exception as e:
+        self.errorSignal.emit(f'\n\nAn error occurred.\n{e}\n')
