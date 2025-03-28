@@ -1,19 +1,18 @@
-from PyQt5 import uic
+from os import path, listdir
 from PyQt5.QtWidgets import (
   QApplication,
   QMainWindow,
   QListWidgetItem,
   QFileDialog
 )
-from os import path, listdir
-from shade_copy_worker import ShadeCopyWorker
+from src.shade_copy_worker import ShadeCopyWorker
 from assets.shade_copy_ui import Ui_mainWindow
 
 class MainWindow(QMainWindow, Ui_mainWindow):
   # buttons --> retainButton, recallButton, watchButton
   # labels acting as buttons --> selectFileDir, selectDirectory
   # display label --> display
-  # List view --> fileListView
+  # list view --> fileListView
 
   def __init__(self):
     super().__init__()
@@ -23,10 +22,13 @@ class MainWindow(QMainWindow, Ui_mainWindow):
     self.selectDirectory.mousePressEvent = self.select_directory
     self.watchButton.clicked.connect(self.begin)
 
+    self.fileToMonitor = None
+    self.shadeWatcher = None
     self.status = False
     self.copyTo = None
     self.pathToMonitor = None
 
+  # pylint: disable-next=unused-argument
   def select_file_dir(self, event):
     folder = QFileDialog.getExistingDirectory(self, 'Select Destination Folder')
     if folder:
@@ -34,7 +36,7 @@ class MainWindow(QMainWindow, Ui_mainWindow):
       directoryFiles = listdir(folder)
       filteredFiles = []
 
-      for file in directoryFiles:  
+      for file in directoryFiles:
         if path.isfile(path.join(folder, file)):
           filteredFiles.append(file)
 
@@ -54,13 +56,14 @@ class MainWindow(QMainWindow, Ui_mainWindow):
       self.selectDirectory.setText('Select Directory')
 
     self.status = False
-    self.shade_watcher.terminate()
+    self.shadeWatcher.terminate()
     self.update_status('\nTerminated watching...')
 
   def error_handler(self, message):
     self.display.setText(message)
     self.reset_fields(True)
 
+  # pylint: disable-next=unused-argument
   def select_directory(self, event):
     folder = QFileDialog.getExistingDirectory(self, 'Select Destination Folder')
     if folder:
@@ -89,11 +92,11 @@ class MainWindow(QMainWindow, Ui_mainWindow):
     if fileName and self.copyTo:
       self.display.setText(f'Watching {fileName}...\n\n')
       copyTo = f'{self.copyTo}/{fileName}'
-      self.shade_watcher = ShadeCopyWorker(self.pathToMonitor, fileName, copyTo)
-      self.shade_watcher.statusSignal.connect(self.update_status)
-      self.shade_watcher.errorSignal.connect(self.error_handler)
+      self.shadeWatcher = ShadeCopyWorker(self.pathToMonitor, fileName, copyTo)
+      self.shadeWatcher.statusSignal.connect(self.update_status)
+      self.shadeWatcher.errorSignal.connect(self.error_handler)
       self.status = True
-      self.shade_watcher.start()
+      self.shadeWatcher.start()
 
 if __name__ == '__main__':
   app = QApplication([])

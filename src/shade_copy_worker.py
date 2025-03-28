@@ -1,8 +1,8 @@
-from PyQt5.QtCore import QThread, pyqtSignal
-from watchfiles import Change, watch
 from shutil import copy2
 from time import sleep
 from os import path
+from PyQt5.QtCore import QThread, pyqtSignal
+from watchfiles import Change, watch
 
 class ShadeCopyWorker(QThread):
   statusSignal = pyqtSignal(str)
@@ -33,7 +33,10 @@ class ShadeCopyWorker(QThread):
                 self.statusSignal.emit(f'{i}. {self.fileName} copied.\n')
       except FileNotFoundError:
         i -= 1
-        self.statusSignal.emit(f'Cannot find {self.pathToMonitor}.\nStopping operations for 5 seconds until it is found again.\n\n')
+        self.statusSignal.emit(
+          f'Cannot find {self.pathToMonitor}.\n'
+          f'Stopping operations for 5 seconds until it is found again.\n\n'
+        )
         sleep(5)
         continue
       except Exception as e:
