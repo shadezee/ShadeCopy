@@ -5,3 +5,5 @@
 # directories
 .vscode
 __pycache__
+.venv
+.github
