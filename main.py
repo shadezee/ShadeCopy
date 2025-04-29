@@ -5,11 +5,12 @@ from PyQt5.QtWidgets import (
   QListWidgetItem,
   QFileDialog
 )
+from src.storage import Storage
 from src.shade_copy_worker import ShadeCopyWorker
 from assets.shade_copy_ui import Ui_mainWindow
 
 class MainWindow(QMainWindow, Ui_mainWindow):
-  # buttons --> retainButton, recallButton, watchButton
+  # buttons --> storageButton, watchButton
   # labels acting as buttons --> selectFileDir, selectDirectory
   # display label --> display
   # list view --> fileListView
@@ -27,6 +28,7 @@ class MainWindow(QMainWindow, Ui_mainWindow):
     self.status = False
     self.copyTo = None
     self.pathToMonitor = None
+    self.storage = Storage()
 
   # pylint: disable-next=unused-argument
   def select_file_dir(self, event):

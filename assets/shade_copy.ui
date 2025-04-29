@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>ShadeCopy</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <property name="layoutDirection">
@@ -103,16 +103,6 @@
             <widget class="QWidget" name="consolePanel" native="true">
              <layout class="QHBoxLayout" name="horizontalLayout_2">
               <item>
-               <widget class="QPushButton" name="retainButton">
-                <property name="enabled">
-                 <bool>false</bool>
-                </property>
-                <property name="text">
-                 <string>Retain</string>
-                </property>
-               </widget>
-              </item>
-              <item>
                <widget class="QPushButton" name="watchButton">
                 <property name="text">
                  <string>Watch</string>
@@ -120,12 +110,12 @@
                </widget>
               </item>
               <item>
-               <widget class="QPushButton" name="recallButton">
+               <widget class="QPushButton" name="storageButton">
                 <property name="enabled">
-                 <bool>false</bool>
+                 <bool>true</bool>
                 </property>
                 <property name="text">
-                 <string notr="true">Recall</string>
+                 <string notr="true">Storage</string>
                 </property>
                </widget>
               </item>
@@ -177,8 +167,6 @@
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
- <resources>
-  <include location="res.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>
