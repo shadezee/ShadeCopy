@@ -7,3 +7,9 @@
 __pycache__
 .venv
 .github
+
+# test files that maybe created
+*_test.py
+
+# sqlite database
+*.db

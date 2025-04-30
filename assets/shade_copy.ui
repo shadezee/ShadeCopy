@@ -53,6 +53,9 @@
              <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,0">
               <item>
                <widget class="QLabel" name="selectFileDir">
+                <property name="cursor">
+                 <cursorShape>PointingHandCursor</cursorShape>
+                </property>
                 <property name="toolTip">
                  <string>Click to select location of file to copy.</string>
                 </property>
@@ -84,6 +87,9 @@
                   <verstretch>0</verstretch>
                  </sizepolicy>
                 </property>
+                <property name="cursor" stdset="0">
+                 <cursorShape>PointingHandCursor</cursorShape>
+                </property>
                 <property name="frameShadow">
                  <enum>QFrame::Plain</enum>
                 </property>
@@ -97,6 +103,9 @@
            </item>
            <item>
             <widget class="QLabel" name="selectDirectory">
+             <property name="cursor">
+              <cursorShape>PointingHandCursor</cursorShape>
+             </property>
              <property name="toolTip">
               <string>Click to select location to copy file to.</string>
              </property>
