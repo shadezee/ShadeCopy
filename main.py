@@ -5,14 +5,15 @@ from PyQt5.QtWidgets import (
   QListWidgetItem,
   QFileDialog
 )
+from PyQt5.QtCore import Qt
 from src.storage import Storage
 from src.shade_copy_worker import ShadeCopyWorker
 from assets.shade_copy_ui import Ui_mainWindow
 
 class MainWindow(QMainWindow, Ui_mainWindow):
-  # buttons --> storageButton, watchButton
+  # buttons --> recallButton, retainButton, watchButton
   # labels acting as buttons --> selectFileDir, selectDirectory
-  # display label --> display
+  # display text edit --> display
   # list view --> fileListView
 
   def __init__(self):
@@ -59,7 +60,7 @@ class MainWindow(QMainWindow, Ui_mainWindow):
 
     self.status = False
     self.shadeWatcher.terminate()
-    self.update_status('\nTerminated watching...')
+    self.update_status('\nTerminated watching...\n')
 
   def error_handler(self, message):
     self.display.setText(message)
@@ -79,7 +80,9 @@ class MainWindow(QMainWindow, Ui_mainWindow):
         self.selectDirectory.setText(f'Destination Folder: {folder}')
 
   def update_status(self, message):
-    self.display.setText(f'{self.display.text()}{message}')
+    self.display.setText(f'{self.display.toPlainText()}{message}')
+    self.display.selectAll()
+    self.display.setAlignment(Qt.AlignCenter)
 
   def begin(self):
     if self.status:
@@ -92,7 +95,7 @@ class MainWindow(QMainWindow, Ui_mainWindow):
 
     fileName = fileItem.text()
     if fileName and self.copyTo:
-      self.display.setText(f'Watching {fileName}...\n\n')
+      self.update_status(f'Watching {fileName}...\n\n')
       copyTo = f'{self.copyTo}/{fileName}'
       self.shadeWatcher = ShadeCopyWorker(self.pathToMonitor, fileName, copyTo)
       self.shadeWatcher.statusSignal.connect(self.update_status)
