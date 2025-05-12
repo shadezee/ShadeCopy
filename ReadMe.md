@@ -11,3 +11,6 @@ pip install -r requirements.txt
 
 5. To change .ui files to .py files
 python -m PyQt5.uic.pyuic ./assets/ui_file.ui -o ./assets/ui_file.py
+
+6. To refresh resource files
+pyrcc5 ./assets/resources.qrc -o ./assets/resources.py
