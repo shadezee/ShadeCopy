@@ -12,4 +12,5 @@ __pycache__
 *_test.py
 
 # sqlite database
+storage
 *.db
