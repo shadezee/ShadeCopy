@@ -115,7 +115,9 @@ class Storage(QDialog, Ui_storageScreen):
         success = self.database.delete(dataId)
         if success:
           self.display()
-        # raise error in popup
+        else:
+          # raise error in popup
+          pass
       self.close()
 
   def remove(self):

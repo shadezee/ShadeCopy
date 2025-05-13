@@ -56,7 +56,8 @@ class MainWindow(QMainWindow, Ui_mainWindow):
     for f in filteredFiles:
       QListWidgetItem(f, self.fileListView)
     if fileName:
-      self.fileListView.setCurrentItem(QListWidgetItem(fileName, self.fileListView))
+      items = self.fileListView.findItems(fileName, Qt.MatchExactly)
+      self.fileListView.setCurrentItem(items[0])
     else:
       self.fileListView.setCurrentRow(0)
 
@@ -110,7 +111,6 @@ class MainWindow(QMainWindow, Ui_mainWindow):
   def retain(self):
     fileItem = self.fileListView.currentItem()
     if self.copyTo and fileItem:
-      print(self.pathToMonitor, fileItem.text(), self.copyTo)
       self.storage.retain(self.pathToMonitor, fileItem.text(), self.copyTo)
 
   def recall(self):
@@ -144,8 +144,7 @@ class MainWindow(QMainWindow, Ui_mainWindow):
         self.shadeWatcher.start()
       else:
         # raise error in popup
-        print('Cannot copy to the same directory.')
-
+        pass
 
 if __name__ == '__main__':
   app = QApplication([])
