@@ -4,7 +4,7 @@
 <br />
 <div align="center">
   <a href="https://github.com/shadezee/ShadeCopy">
-    <img src="assets/icon.png" alt="Logo" width="250" height="250">
+    <img src="./assets/icon.ico" alt="Logo" width="250" height="250">
   </a>
 
   <h3 align="center">Shade Copy</h3>
