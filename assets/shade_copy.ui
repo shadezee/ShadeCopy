@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>ShadeCopy</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <property name="layoutDirection">
@@ -53,6 +53,15 @@
              <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,0">
               <item>
                <widget class="QLabel" name="selectFileDir">
+                <property name="cursor">
+                 <cursorShape>PointingHandCursor</cursorShape>
+                </property>
+                <property name="toolTip">
+                 <string>Click to select location of file to copy.</string>
+                </property>
+                <property name="toolTipDuration">
+                 <number>-1</number>
+                </property>
                 <property name="styleSheet">
                  <string notr="true"/>
                 </property>
@@ -78,6 +87,9 @@
                   <verstretch>0</verstretch>
                  </sizepolicy>
                 </property>
+                <property name="cursor" stdset="0">
+                 <cursorShape>PointingHandCursor</cursorShape>
+                </property>
                 <property name="frameShadow">
                  <enum>QFrame::Plain</enum>
                 </property>
@@ -91,6 +103,12 @@
            </item>
            <item>
             <widget class="QLabel" name="selectDirectory">
+             <property name="cursor">
+              <cursorShape>PointingHandCursor</cursorShape>
+             </property>
+             <property name="toolTip">
+              <string>Click to select location to copy file to.</string>
+             </property>
              <property name="text">
               <string>Select directory</string>
              </property>
@@ -104,8 +122,8 @@
              <layout class="QHBoxLayout" name="horizontalLayout_2">
               <item>
                <widget class="QPushButton" name="retainButton">
-                <property name="enabled">
-                 <bool>false</bool>
+                <property name="toolTip">
+                 <string>Save current paths to storage.</string>
                 </property>
                 <property name="text">
                  <string>Retain</string>
@@ -114,6 +132,9 @@
               </item>
               <item>
                <widget class="QPushButton" name="watchButton">
+                <property name="toolTip">
+                 <string>Start monitoring for changes.</string>
+                </property>
                 <property name="text">
                  <string>Watch</string>
                 </property>
@@ -122,7 +143,10 @@
               <item>
                <widget class="QPushButton" name="recallButton">
                 <property name="enabled">
-                 <bool>false</bool>
+                 <bool>true</bool>
+                </property>
+                <property name="toolTip">
+                 <string>Open storage.</string>
                 </property>
                 <property name="text">
                  <string notr="true">Recall</string>
@@ -139,30 +163,27 @@
          <widget class="QWidget" name="rightPanel" native="true">
           <layout class="QVBoxLayout" name="verticalLayout_2">
            <item>
-            <widget class="QLabel" name="display">
-             <property name="frameShape">
-              <enum>QFrame::Box</enum>
+            <widget class="QTextEdit" name="display">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
              </property>
-             <property name="text">
-              <string/>
+             <property name="font">
+              <font>
+               <underline>false</underline>
+               <kerning>false</kerning>
+              </font>
              </property>
-             <property name="textFormat">
-              <enum>Qt::PlainText</enum>
+             <property name="styleSheet">
+              <string notr="true">background:transparent</string>
              </property>
-             <property name="scaledContents">
-              <bool>false</bool>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignHCenter|Qt::AlignTop</set>
-             </property>
-             <property name="wordWrap">
+             <property name="readOnly">
               <bool>true</bool>
              </property>
-             <property name="margin">
-              <number>7</number>
-             </property>
-             <property name="textInteractionFlags">
-              <set>Qt::NoTextInteraction</set>
+             <property name="placeholderText">
+              <string/>
              </property>
             </widget>
            </item>
@@ -177,8 +198,6 @@
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
- <resources>
-  <include location="res.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>

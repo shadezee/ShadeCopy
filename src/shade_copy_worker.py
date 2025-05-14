@@ -4,6 +4,7 @@ from os import path
 from PyQt5.QtCore import QThread, pyqtSignal
 from watchfiles import Change, watch
 
+
 class ShadeCopyWorker(QThread):
   statusSignal = pyqtSignal(str)
   errorSignal = pyqtSignal(str)
@@ -35,7 +36,7 @@ class ShadeCopyWorker(QThread):
         i -= 1
         self.statusSignal.emit(
           f'Cannot find {self.pathToMonitor}.\n'
-          f'Stopping operations for 5 seconds until it is found again.\n\n'
+          f'Resuming operations in 5 seconds if it is found again.\n\n'
         )
         sleep(5)
         continue
