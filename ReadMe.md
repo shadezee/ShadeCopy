@@ -45,7 +45,7 @@ While learning Java Servlets in VSCode, I found it tedious to manually copy the 
   #### 3. Activate the virtual environment
   ```
     # Windows
-    python -m venv .venv
+    .venv\Scripts\activate
 
     # macOS/Linux
     source .venv/bin/activate

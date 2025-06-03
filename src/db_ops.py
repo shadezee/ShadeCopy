@@ -1,5 +1,6 @@
 import sqlite3 as sql
 from os import path, makedirs
+from src.errors import Errors
 
 
 class DbOps:
@@ -9,8 +10,10 @@ class DbOps:
     self.cursor = None
 
     if not self.create_table():
-      # raise error in a popup
-      pass
+      Errors.raise_error(self,
+                        title='STORAGE_ERROR_TITLE',
+                        errorType='STORAGE_ERROR'
+                        )
 
   def create_connection(self):
     dbDirectory = path.join(path.dirname(path.dirname(path.abspath(__file__))), 'storage')
@@ -41,17 +44,24 @@ class DbOps:
       self.cursor.execute(query, (filePath, fileName, directoryPath))
       self.connection.commit()
     except Exception:
-      # raise error in a popup
+      Errors.raise_error(self,
+                        title='STORAGE_ERROR_TITLE',
+                        errorType='INSERTION_ERROR'
+                        )
       return False
     return True
 
   def delete(self, dataId):
     try:
       self.create_connection()
-      query = f'DELETE FROM data WHERE id = {dataId}'
-      self.cursor.execute(query)
+      query = 'DELETE FROM data WHERE id = ?'
+      self.cursor.execute(query, (dataId,))
       self.connection.commit()
     except Exception:
+      Errors.raise_error(self,
+                        title='STORAGE_ERROR_TITLE',
+                        errorType='DELETION_ERROR'
+                        )
       return False
     finally:
       self.close_connection()
@@ -70,8 +80,11 @@ class DbOps:
               '''
       rows = self.cursor.execute(query).fetchall()
     except Exception:
-      # raise error in popup
-      pass
+      Errors.raise_error(self,
+                        title='STORAGE_ERROR_TITLE',
+                        errorType='SELECTION_ERROR'
+                        )
+      return None
     finally:
       self.close_connection()
 
@@ -95,6 +108,10 @@ class DbOps:
       self.cursor.execute(query)
       self.connection.commit()
     except Exception:
+      Errors.raise_error(self,
+                        title='STORAGE_ERROR_TITLE',
+                        errorType='STORAGE_ERROR'
+                        )
       return False
     finally:
       self.close_connection()
