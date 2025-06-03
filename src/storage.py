@@ -7,6 +7,7 @@ from PyQt5.QtGui import QIcon, QStandardItemModel, QStandardItem
 from PyQt5.QtCore import Qt
 from assets.storage_ui import Ui_storageScreen
 from src.db_ops import DbOps
+from src.errors import Errors
 # pylint: disable-next=unused-import
 import assets.resources
 
@@ -71,6 +72,9 @@ class Storage(QDialog, Ui_storageScreen):
 
   def display(self):
     data = self.database.select()
+    if not data:
+      return False
+
     self.model.setRowCount(0)
 
     for row in data:
@@ -92,12 +96,15 @@ class Storage(QDialog, Ui_storageScreen):
 
     self.storageView.setModel(self.model)
     self.adjust_view()
+    return True
 
   def retain(self, filePath, fileName, directoryPath):
     success = self.database.save(filePath, fileName, directoryPath)
     if not success:
-      # raise error in popup
-      pass
+      Errors.raise_error(self,
+                        title='STORAGE_ERROR_TITLE',
+                        errorType='RETAIN_ERROR'
+                        )
     return success
 
   def recall(self):
@@ -116,8 +123,10 @@ class Storage(QDialog, Ui_storageScreen):
         if success:
           self.display()
         else:
-          # raise error in popup
-          pass
+          Errors.raise_error(self,
+                            title='STORAGE_ERROR_TITLE',
+                            errorType='RECALL_ERROR'
+                            )
       self.close()
 
   def remove(self):

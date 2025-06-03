@@ -41,4 +41,4 @@ class ShadeCopyWorker(QThread):
         sleep(5)
         continue
       except Exception as e:
-        self.errorSignal.emit(f'\n\nAn error occurred.\n{e}\n')
+        self.errorSignal.emit(f'\n\nAn error occurred.\n{str(e)}\n')
